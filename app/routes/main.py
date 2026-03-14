@@ -66,12 +66,22 @@ def index():
     except Exception:
         pass
 
-    profile = Profile.query.first()
-    projects = Project.query.order_by(Project.id.desc()).all()
-    skills = Skill.query.all()
-    experiences = Experience.query.order_by(Experience.id.desc()).all()
-    social_links = SocialLink.query.all()
-    coding_profiles = CodingProfile.query.all()
+    try:
+        profile = Profile.query.first()
+        projects = Project.query.order_by(Project.id.desc()).all()
+        skills = Skill.query.all()
+        experiences = Experience.query.order_by(Experience.id.desc()).all()
+        social_links = SocialLink.query.all()
+        coding_profiles = CodingProfile.query.all()
+    except Exception as e:
+        # If database tables don't exist yet, return empty lists
+        current_app.logger.warning(f"Database query failed in index: {e}")
+        profile = None
+        projects = []
+        skills = []
+        experiences = []
+        social_links = []
+        coding_profiles = []
 
     resume_path = os.path.join(current_app.config["UPLOAD_FOLDER"], "resumes", "resume.pdf")
     resume_exists = os.path.exists(resume_path)

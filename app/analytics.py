@@ -34,15 +34,19 @@ def get_country_from_ip(ip_address):
 def _do_track_page_view(app, page, ip, user_agent):
     """Background worker for tracking page views."""
     with app.app_context():
-        country = get_country_from_ip(ip)
-        pv = PageView(
-            page=page,
-            ip_address=ip,
-            country=country,
-            user_agent=user_agent[:500],
-        )
-        db.session.add(pv)
-        db.session.commit()
+        try:
+            country = get_country_from_ip(ip)
+            pv = PageView(
+                page=page,
+                ip_address=ip,
+                country=country,
+                user_agent=user_agent[:500],
+            )
+            db.session.add(pv)
+            db.session.commit()
+        except Exception as e:
+            # Log but don't crash - analytics is non-critical
+            app.logger.debug(f"Failed to track page view: {e}")
 
 
 def track_page_view(page):
@@ -59,10 +63,14 @@ def track_page_view(page):
 def _do_track_resume_download(app, ip):
     """Background worker for tracking resume downloads."""
     with app.app_context():
-        country = get_country_from_ip(ip)
-        rd = ResumeDownload(ip_address=ip, country=country)
-        db.session.add(rd)
-        db.session.commit()
+        try:
+            country = get_country_from_ip(ip)
+            rd = ResumeDownload(ip_address=ip, country=country)
+            db.session.add(rd)
+            db.session.commit()
+        except Exception as e:
+            # Log but don't crash - analytics is non-critical
+            app.logger.debug(f"Failed to track resume download: {e}")
 
 
 def track_resume_download():

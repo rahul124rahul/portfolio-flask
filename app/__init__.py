@@ -36,7 +36,9 @@ def create_app(config_class=Config):
     with app.app_context():
         try:
             db.create_all()
+            app.logger.info("✓ Database tables initialized successfully")
         except Exception as e:
-            app.logger.debug(f"Note: db.create_all() had an issue (may be expected): {e}")
+            app.logger.error(f"✗ Failed to create database tables: {e}", exc_info=True)
+            # Don't fail app startup, but log the error clearly
 
     return app
