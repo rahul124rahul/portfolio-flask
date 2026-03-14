@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Coding Profiles{% endblock %}
+
+{% block navbar %}
+{% include "partials/admin_navbar.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4"><i class="bi bi-code-slash me-2"></i>Coding Profiles</h2>
+
+  <!-- Add Coding Profile Form -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header"><strong>Add Coding Profile</strong></div>
+    <div class="card-body">
+      <form action="{{ url_for('main.add_coding_profile') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label class="form-label">Platform <span class="text-danger">*</span></label>
+            <select name="platform" class="form-select" required>
+              <option value="">Select...</option>
+              <option value="LeetCode">LeetCode</option>
+              <option value="HackerRank">HackerRank</option>
+              <option value="Codeforces">Codeforces</option>
+              <option value="GeeksForGeeks">GeeksForGeeks</option>
+              <option value="CodeChef">CodeChef</option>
+              <option value="AtCoder">AtCoder</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Username <span class="text-danger">*</span></label>
+            <input type="text" name="username" class="form-control" required>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Profile URL</label>
+            <input type="url" name="profile_url" class="form-control" placeholder="https://...">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Problems Solved</label>
+            <input type="number" name="problems_solved" class="form-control" min="0" value="0">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Rating</label>
+            <input type="text" name="rating" class="form-control" placeholder="e.g. 1800">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Rank</label>
+            <input type="text" name="rank" class="form-control" placeholder="e.g. Knight">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Badge</label>
+            <input type="text" name="badge" class="form-control" placeholder="e.g. 5 Star">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Icon Class</label>
+            <input type="text" name="icon_class" class="form-control" placeholder="e.g. bi bi-code-slash">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3"><i class="bi bi-plus-circle me-1"></i>Add Profile</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Existing Profiles -->
+  <div class="card shadow-sm">
+    <div class="card-header"><strong>Current Profiles</strong></div>
+    <div class="card-body">
+      {% if profiles %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Platform</th>
+              <th>Username</th>
+              <th>Problems</th>
+              <th>Rating</th>
+              <th>Rank</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for cp in profiles %}
+            <tr>
+              <td><i class="{{ cp.icon_class or 'bi bi-code-slash' }} me-1"></i><strong>{{ cp.platform }}</strong></td>
+              <td>
+                {% if cp.profile_url %}
+                <a href="{{ cp.profile_url }}" target="_blank">{{ cp.username }}</a>
+                {% else %}
+                {{ cp.username }}
+                {% endif %}
+              </td>
+              <td>{{ cp.problems_solved or '-' }}</td>
+              <td>{{ cp.rating or '-' }}</td>
+              <td>{{ cp.rank or '-' }}</td>
+              <td>
+                <form action="{{ url_for('main.delete_coding_profile', id=cp.id) }}" method="POST" class="d-inline">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this profile?')">Delete</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-muted mb-0">No coding profiles added yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

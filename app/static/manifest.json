@@ -1,0 +1,17 @@
+{
+  "name": "Developer Portfolio",
+  "short_name": "Portfolio",
+  "description": "Professional developer portfolio",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#667eea",
+  "theme_color": "#667eea",
+  "icons": [
+    {
+      "src": "/static/icons/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

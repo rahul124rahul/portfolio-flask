@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Security Settings{% endblock %}
+
+{% block navbar %}
+{% include "partials/admin_navbar.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4"><i class="bi bi-shield-lock me-2"></i>Security Settings</h2>
+
+  <!-- 2FA Section -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header"><strong>Two-Factor Authentication (2FA)</strong></div>
+    <div class="card-body">
+      {% if current_user.is_2fa_enabled %}
+        <div class="alert alert-success mb-3">
+          <i class="bi bi-check-circle me-1"></i> 2FA is <strong>enabled</strong>. Your account is protected.
+        </div>
+        <form action="{{ url_for('main.disable_2fa') }}" method="POST">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to disable 2FA?')">
+            <i class="bi bi-shield-x me-1"></i>Disable 2FA
+          </button>
+        </form>
+
+      {% elif setup_mode is defined and setup_mode %}
+        <div class="alert alert-info mb-3">
+          <i class="bi bi-info-circle me-1"></i> Scan the QR code below with Google Authenticator or a similar app.
+        </div>
+
+        <div class="text-center mb-3">
+          <img src="data:image/png;base64,{{ qr_code }}" alt="2FA QR Code" class="img-fluid" style="max-width: 250px;">
+        </div>
+
+        <p class="text-center text-muted small">
+          Manual key: <code>{{ totp_secret }}</code>
+        </p>
+
+        <form action="{{ url_for('main.confirm_2fa') }}" method="POST" class="row justify-content-center">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="col-md-4">
+            <label class="form-label">Enter the 6-digit code from your app</label>
+            <input type="text" name="token" class="form-control text-center" maxlength="6" pattern="[0-9]{6}" required autofocus placeholder="000000">
+          </div>
+          <div class="col-12 text-center mt-3">
+            <button type="submit" class="btn btn-success">
+              <i class="bi bi-check-circle me-1"></i>Verify & Enable 2FA
+            </button>
+          </div>
+        </form>
+
+      {% else %}
+        <div class="alert alert-warning mb-3">
+          <i class="bi bi-exclamation-triangle me-1"></i> 2FA is <strong>not enabled</strong>. Enable it to add an extra layer of security.
+        </div>
+        <form action="{{ url_for('main.enable_2fa') }}" method="POST">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-shield-check me-1"></i>Enable 2FA
+          </button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Security Info -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header"><strong>Security Features</strong></div>
+    <div class="card-body">
+      <ul class="list-unstyled mb-0">
+        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Login rate limiting (5 attempts/minute)</li>
+        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>CSRF protection on all forms</li>
+        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Password hashing (Werkzeug)</li>
+        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Admin activity logging</li>
+        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>JWT authentication for API</li>
+        <li class="mb-2">
+          {% if current_user.is_2fa_enabled %}
+          <i class="bi bi-check-circle text-success me-2"></i>
+          {% else %}
+          <i class="bi bi-x-circle text-danger me-2"></i>
+          {% endif %}
+          Two-factor authentication (TOTP)
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Activity Log Link -->
+  <div class="card shadow-sm">
+    <div class="card-body d-flex justify-content-between align-items-center">
+      <div>
+        <i class="bi bi-clock-history me-2 text-primary"></i>
+        <strong>View full admin activity log</strong>
+      </div>
+      <a href="{{ url_for('main.admin_activity_log') }}" class="btn btn-outline-primary btn-sm">View Logs</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

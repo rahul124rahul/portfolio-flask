@@ -1,0 +1,57 @@
+<!-- Maze Game Section -->
+<section class="py-5" id="maze-game" data-aos="fade-up">
+  <div class="container">
+    <h2 class="text-center mb-4 fw-bold">Take a Break - Play a Game!</h2>
+    <div class="maze-container">
+      <div class="maze-header">
+        <h3>🎮 Maze Challenge</h3>
+        <p>Navigate to the finish (green) without hitting walls!</p>
+      </div>
+
+      <div class="maze-timer" id="mazeTimer">0s</div>
+
+      <div class="maze-canvas-wrapper">
+        <canvas id="mazeCanvas"></canvas>
+      </div>
+
+      <div class="maze-controls">
+        <button class="maze-btn" id="mazeNewGameBtn">
+          <i class="bi bi-arrow-clockwise"></i> New Game
+        </button>
+      </div>
+
+      <div id="mazeCompletion" class="maze-new-game"></div>
+
+      <div class="maze-stats">
+        <div class="maze-stat">
+          <div class="maze-stat-value">↑↓←→</div>
+          <div class="maze-stat-label">Arrow Keys</div>
+        </div>
+        <div class="maze-stat">
+          <div class="maze-stat-value">🖱️</div>
+          <div class="maze-stat-label">Click to Move</div>
+        </div>
+      </div>
+
+      <div class="maze-instructions">
+        <p style="margin: 0;">
+          <strong>How to Play:</strong><br>
+          Use arrow keys or WASD to move. Click anywhere to move towards that position. <br>
+          Reach the green finish to complete the maze. Each game is randomly generated!
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Load maze game script
+  document.addEventListener('DOMContentLoaded', function() {
+    if (!window.mazeGameLoaded) {
+      var script = document.createElement('script');
+      script.src = '{{ url_for("static", filename="js/maze-game.js") }}';
+      document.head.appendChild(script);
+      window.mazeGameLoaded = true;
+    }
+  });
+</script>

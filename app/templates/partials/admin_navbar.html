@@ -1,0 +1,67 @@
+<!-- Admin Navigation Bar (shared partial) -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">
+      <i class="bi bi-speedometer2 me-1"></i> Admin Panel
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="adminNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('main.index') }}" target="_blank">
+            <i class="bi bi-eye"></i> View Site
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('main.edit_profile') }}">
+            <i class="bi bi-person"></i> Profile
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('main.manage_skills') }}">
+            <i class="bi bi-tools"></i> Skills
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('main.manage_experience') }}">
+            <i class="bi bi-briefcase"></i> Experience
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('main.admin_messages') }}">
+            <i class="bi bi-envelope"></i> Messages
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('main.admin_analytics') }}">
+            <i class="bi bi-graph-up"></i> Analytics
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('main.manage_coding_profiles') }}">
+            <i class="bi bi-code-slash"></i> Coding
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('main.admin_security') }}">
+            <i class="bi bi-shield-lock"></i> Security
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('main.admin_activity_log') }}">
+            <i class="bi bi-clock-history"></i> Logs
+          </a>
+        </li>
+      </ul>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link text-danger" href="{{ url_for('main.admin_logout') }}">
+            <i class="bi bi-box-arrow-right"></i> Logout
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,354 @@
+{% extends "base.html" %}
+
+{% block title %}{{ profile.name or "Portfolio" }} - Developer Portfolio{% endblock %}
+
+{% block meta_description %}{{ profile.bio[:160] if profile and profile.bio else 'Professional developer portfolio showcasing projects, skills, and experience' }}{% endblock %}
+{% block meta_keywords %}{{ profile.name if profile else 'developer' }}, portfolio, software engineer{% if skills %}, {{ ', '.join(skills[:10]|map(attribute='name')) }}{% endif %}{% endblock %}
+{% block meta_author %}{{ profile.name if profile else 'Developer' }}{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="#">{{ profile.name or "Portfolio" }}</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="#experience">Experience</a></li>
+        <li class="nav-item"><a class="nav-link" href="#skills">Skills</a></li>
+        {% if coding_profiles %}<li class="nav-item"><a class="nav-link" href="#coding-profiles">Coding</a></li>{% endif %}
+        <li class="nav-item"><a class="nav-link" href="#projects">Projects</a></li>
+        <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+  body { padding-top: 70px; }
+</style>
+
+<!-- JSON-LD Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "{{ profile.name if profile else '' }}",
+  "jobTitle": "{{ profile.title if profile else '' }}",
+  "description": "{{ profile.bio[:200] if profile and profile.bio else '' }}",
+  "email": "{{ profile.email if profile else '' }}",
+  "url": "{{ request.url_root }}"
+}
+</script>
+{% endblock %}
+
+{% block content %}
+
+<!-- Page Loader -->
+<div id="pageLoader">
+  <div class="spinner-border text-primary" style="width:3rem;height:3rem;" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<!-- Hero Section -->
+<section class="hero-section text-white text-center" id="top">
+  <div class="container position-relative" data-aos="fade-down">
+    {% if profile and profile.profile_image %}
+    <div class="mb-4">
+      <img src="{{ url_for('static', filename='uploads/profile_images/' ~ profile.profile_image) }}"
+           class="profile-img mb-3"
+           alt="{{ profile.name }}"
+           loading="eager"
+           onerror="this.style.display='none'">
+    </div>
+    {% endif %}
+    <h1 class="mt-2 fw-bold display-4">{{ profile.name if profile else "Your Name" }}</h1>
+    <h4 class="text-light opacity-75 fw-normal">{{ profile.title if profile else "Your Title" }}</h4>
+    <p class="lead mt-2 mb-4" id="typingText"></p>
+
+    {% if social_links %}
+    <div class="mt-3">
+      {% for link in social_links %}
+      <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" class="text-white me-3 fs-4" title="{{ link.name }}">
+        <i class="{{ link.icon }}"></i>
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if resume_exists %}
+    <a href="{{ url_for('main.download_resume') }}" class="btn btn-outline-light btn-lg mt-4">
+      <i class="bi bi-download me-2"></i>Download Resume
+    </a>
+    {% endif %}
+  </div>
+</section>
+
+{% include 'partials/visitor_counter.html' %}
+
+<!-- About Section -->
+<section class="py-5" id="about" data-aos="fade-up">
+  <div class="container">
+    <h2 class="text-center mb-5 fw-bold">About Me</h2>
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        {% if profile %}
+        <div class="card border-0 shadow-sm p-4">
+          <p class="lead mb-4" style="line-height: 1.8;">{{ profile.bio }}</p>
+          <div class="row g-3">
+            {% if profile.email %}
+            <div class="col-md-6">
+              <div class="d-flex align-items-center">
+                <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                  <i class="bi bi-envelope text-primary fs-5"></i>
+                </div>
+                <div>
+                  <small class="text-muted d-block">Email</small>
+                  <a href="mailto:{{ profile.email }}" class="text-decoration-none">{{ profile.email }}</a>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% if profile.phone %}
+            <div class="col-md-6">
+              <div class="d-flex align-items-center">
+                <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                  <i class="bi bi-phone text-primary fs-5"></i>
+                </div>
+                <div>
+                  <small class="text-muted d-block">Phone</small>
+                  <span>{{ profile.phone }}</span>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% if profile.location %}
+            <div class="col-md-6">
+              <div class="d-flex align-items-center">
+                <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                  <i class="bi bi-geo-alt text-primary fs-5"></i>
+                </div>
+                <div>
+                  <small class="text-muted d-block">Location</small>
+                  <span>{{ profile.location }}</span>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Experience Section -->
+{% if experiences %}
+<section class="py-5 bg-light" id="experience" data-aos="fade-up">
+  <div class="container">
+    <h2 class="text-center mb-5 fw-bold">Experience</h2>
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        {% for exp in experiences %}
+        <div class="timeline-item" data-aos="fade-left" data-aos-delay="{{ loop.index0 * 100 }}">
+          <h5 class="fw-bold mb-1">{{ exp.role }}</h5>
+          <h6 class="text-primary">
+            {% if exp.company_url %}
+            <a href="{{ exp.company_url }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none">{{ exp.company }}</a>
+            {% else %}
+            {{ exp.company }}
+            {% endif %}
+            {% if exp.location %}<span class="text-muted"> &mdash; {{ exp.location }}</span>{% endif %}
+          </h6>
+          <small class="text-muted">{{ exp.start_date }} &ndash; {{ exp.end_date or "Present" }}</small>
+          {% if exp.description %}
+          <p class="mt-2 mb-0">{{ exp.description }}</p>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- Skills Section -->
+{% if skills %}
+<section class="py-5" id="skills" data-aos="fade-up">
+  <div class="container">
+    <h2 class="text-center mb-4 fw-bold">Skills</h2>
+    <canvas id="skillGalaxy"></canvas>
+    <div class="d-flex flex-wrap justify-content-center gap-2">
+      {% for skill in skills %}
+      <span class="badge bg-primary skill-badge">{{ skill.name }}</span>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- Coding Profiles Section -->
+{% if coding_profiles %}
+<section class="py-5 bg-light" id="coding-profiles" data-aos="fade-up">
+  <div class="container">
+    <h2 class="text-center mb-4 fw-bold">Coding Profiles</h2>
+    <div class="row g-4 justify-content-center">
+      {% for cp in coding_profiles %}
+      <div class="col-md-6 col-lg-3" data-aos="zoom-in" data-aos-delay="{{ loop.index0 * 100 }}">
+        <div class="card h-100 shadow-sm coding-profile-card text-center p-3">
+          <div class="card-body">
+            <i class="{{ cp.icon_class or 'bi bi-code-slash' }} fs-1 text-primary mb-2 d-block"></i>
+            <h5 class="fw-bold">{{ cp.platform }}</h5>
+            <p class="text-muted mb-1">@{{ cp.username }}</p>
+            {% if cp.problems_solved %}
+            <p class="mb-1"><strong>{{ cp.problems_solved }}</strong> problems solved</p>
+            {% endif %}
+            {% if cp.rating %}
+            <p class="mb-1">Rating: <strong>{{ cp.rating }}</strong></p>
+            {% endif %}
+            {% if cp.rank %}
+            <span class="badge bg-success">{{ cp.rank }}</span>
+            {% endif %}
+            {% if cp.badge %}
+            <span class="badge bg-warning text-dark">{{ cp.badge }}</span>
+            {% endif %}
+            {% if cp.profile_url %}
+            <div class="mt-2">
+              <a href="{{ cp.profile_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-box-arrow-up-right me-1"></i>View Profile
+              </a>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- Projects Section -->
+{% if projects %}
+<section class="py-5" id="projects" data-aos="fade-up">
+  <div class="container">
+    <h2 class="text-center mb-4 fw-bold">Projects</h2>
+    <div class="row g-4">
+      {% for project in projects %}
+      <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="{{ loop.index0 * 100 }}">
+        <div class="card card-3d h-100 shadow-sm border-0">
+          {% if project.image %}
+          <img src="{{ url_for('static', filename='uploads/project_images/' ~ project.image) }}" class="card-img-top" alt="{{ project.title }}" style="height: 200px; object-fit: cover;">
+          {% endif %}
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title fw-bold">{{ project.title }}</h5>
+            <p class="card-text text-muted">{{ project.description }}</p>
+            <div class="mt-auto">
+              {% if project.github %}
+              <a href="{{ project.github }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark btn-sm me-2">
+                <i class="bi bi-github"></i> GitHub
+              </a>
+              {% endif %}
+              {% if project.demo %}
+              <a href="{{ project.demo }}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">
+                <i class="bi bi-box-arrow-up-right"></i> Live Demo
+              </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% include 'partials/resume_viewer.html' %}
+
+{% include 'partials/number_game.html' %}
+
+<!-- Contact Section -->
+<section class="py-5 bg-light" id="contact" data-aos="fade-up">
+  <div class="container">
+    <h2 class="text-center mb-4 fw-bold">Contact Me</h2>
+    <div class="row justify-content-center">
+      <div class="col-lg-6">
+        <form action="{{ url_for('main.contact') }}" method="POST">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="mb-3">
+            <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
+            <input type="text" name="name" id="name" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+            <input type="email" name="email" id="email" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="subject" class="form-label">Subject</label>
+            <input type="text" name="subject" id="subject" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label for="message" class="form-label">Message <span class="text-danger">*</span></label>
+            <textarea name="message" id="message" class="form-control" rows="5" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg w-100">
+            <i class="bi bi-send me-2"></i>Send Message
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-dark text-white py-4">
+  <div class="container text-center">
+    {% if social_links %}
+    <div class="mb-3">
+      {% for link in social_links %}
+      <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" class="text-white me-3 fs-5" title="{{ link.name }}">
+        <i class="{{ link.icon }}"></i>
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <p class="mb-1">&copy; {{ current_year }} {{ profile.name if profile else "Portfolio" }}. All Rights Reserved.</p>
+    <a href="#top" class="btn btn-outline-light btn-sm mt-2">
+      <i class="bi bi-arrow-up"></i> Back to Top
+    </a>
+  </div>
+</footer>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Typing effect for tagline
+(function() {
+  var text = {{ (profile.tagline or "")|tojson }};
+  var el = document.getElementById('typingText');
+  if (el && text) {
+    var i = 0;
+    function type() {
+      if (i < text.length) {
+        el.textContent += text.charAt(i);
+        i++;
+        setTimeout(type, 50);
+      } else {
+        el.classList.add('done');
+      }
+    }
+    type();
+  } else if (el) {
+    el.classList.add('done');
+  }
+})();
+</script>
+{% endblock %}

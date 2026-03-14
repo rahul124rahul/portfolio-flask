@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: portfolio-flask
+    runtime: python
+    buildCommand: ./build.sh
+    startCommand: gunicorn run:app
+    plan: free
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      - key: MAIL_SERVER
+        sync: false
+      - key: MAIL_PORT
+        sync: false
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: SITE_URL
+        sync: false
+      - key: PYTHON_VERSION
+        value: 3.11.7

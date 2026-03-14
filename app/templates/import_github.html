@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Import GitHub Repos - Portfolio Admin{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h1 class="mb-4">Import GitHub Repositories</h1>
+
+  {% if not github_repos %}
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Enter GitHub Username</h5>
+      <form method="POST">
+        <div class="mb-3">
+          <label for="github_username" class="form-label">GitHub Username</label>
+          <input type="text" class="form-control" id="github_username" name="github_username"
+                 value="{{ username }}" placeholder="e.g., torvalds" required>
+          <small class="form-text text-muted">Enter your GitHub username to fetch your public repositories.</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Fetch Repositories</button>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <div class="card">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Found {{ github_repos|length }} Public Repositories</h5>
+    </div>
+    <form method="POST" action="{{ url_for('main.import_github_save') }}">
+      <input type="hidden" name="github_username" value="{{ username }}">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="select-all" onchange="toggleAll(this)"></th>
+                <th>Repository</th>
+                <th>Description</th>
+                <th>Language</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for repo in github_repos %}
+              <tr>
+                <td><input type="checkbox" name="selected_repos" value="{{ repo.name }}" class="repo-checkbox"></td>
+                <td><strong>{{ repo.name }}</strong></td>
+                <td>{{ repo.description[:80] }}</td>
+                <td><span class="badge bg-secondary">{{ repo.language }}</span></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card-footer">
+        <a href="{{ url_for('main.import_github') }}" class="btn btn-secondary">Back</a>
+        <button type="submit" class="btn btn-success">Import Selected</button>
+      </div>
+    </form>
+  </div>
+  {% endif %}
+
+  <div class="mt-4">
+    <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">← Back to Dashboard</a>
+  </div>
+</div>
+
+<script>
+function toggleAll(checkbox) {
+  document.querySelectorAll('.repo-checkbox').forEach(cb => cb.checked = checkbox.checked);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,128 @@
+<!-- Interactive Terminal Portfolio -->
+<section class="py-5" id="terminal" data-aos="fade-up">
+  <div class="container">
+    <h2 class="text-center mb-4 fw-bold">Try Commands</h2>
+    <div class="terminal-container">
+      <div class="terminal-output" id="terminalOutput"></div>
+      <div class="terminal-input-line">
+        <span class="terminal-prompt">portfolio $</span>
+        <input type="text" id="terminalInput" class="terminal-input" placeholder="help" autocomplete="off">
+      </div>
+    </div>
+    <div class="text-center mt-3">
+      <small class="text-muted">Try: help, about, skills, projects, contact</small>
+    </div>
+  </div>
+</section>
+
+<script>
+(function() {
+  var output = document.getElementById('terminalOutput');
+  var input = document.getElementById('terminalInput');
+
+  function printLine(text, type = 'info') {
+    var line = document.createElement('div');
+    line.className = 'terminal-line terminal-' + type;
+    line.textContent = text;
+    output.appendChild(line);
+    output.scrollTop = output.scrollHeight;
+  }
+
+  function printCommand(cmd) {
+    var line = document.createElement('div');
+    line.className = 'terminal-line terminal-command';
+    line.textContent = '$ ' + cmd;
+    output.appendChild(line);
+    output.scrollTop = output.scrollHeight;
+  }
+
+  var commands = {
+    help: () => {
+      printLine('Available commands:', 'prompt');
+      printLine('  help      - Show this message');
+      printLine('  about     - Learn about the developer');
+      printLine('  skills    - View technical skills');
+      printLine('  projects  - See recent projects');
+      printLine('  contact   - Get contact information');
+      printLine('  clear     - Clear terminal');
+    },
+    about: () => {
+      {% if profile %}
+      printLine('Name:     {{ profile.name }}');
+      printLine('Title:    {{ profile.title }}');
+      printLine('Bio:      {{ profile.bio or "N/A" }}');
+      printLine('Location: {{ profile.location or "N/A" }}');
+      {% else %}
+      printLine('No profile data', 'error');
+      {% endif %}
+    },
+    skills: () => {
+      {% if skills %}
+      printLine('Technical Skills ({{ skills|length }}):', 'prompt');
+      {% for skill in skills[:8] %}
+      printLine('  ◆ {{ skill.name }}');
+      {% endfor %}
+      {% if skills|length > 8 %}
+      printLine('  ... and {{ skills|length - 8 }} more');
+      {% endif %}
+      {% else %}
+      printLine('No skills added', 'error');
+      {% endif %}
+    },
+    projects: () => {
+      {% if projects %}
+      printLine('Recent Projects ({{ projects|length }}):', 'prompt');
+      {% for project in projects[:3] %}
+      printLine('  ▪ {{ project.title }}');
+      printLine('    {{ project.description[:50] or "N/A" }}');
+      {% endfor %}
+      {% else %}
+      printLine('No projects added', 'error');
+      {% endif %}
+    },
+    contact: () => {
+      {% if profile %}
+      {% if profile.email %}
+      printLine('Email:  {{ profile.email }}');
+      {% endif %}
+      {% if profile.phone %}
+      printLine('Phone:  {{ profile.phone }}');
+      {% endif %}
+      printLine('Web:    ' + window.location.origin);
+      {% else %}
+      printLine('No contact info', 'error');
+      {% endif %}
+    },
+    clear: () => {
+      output.innerHTML = '';
+    }
+  };
+
+  // Welcome message
+  printLine('Portfolio Terminal v1.0', 'info');
+  printLine('Type "help" for available commands', 'info');
+  printLine('');
+
+  input.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      var cmd = input.value.trim().toLowerCase();
+      input.value = '';
+
+      if (cmd === '') return;
+
+      printCommand(cmd);
+
+      if (commands[cmd]) {
+        commands[cmd]();
+      } else {
+        printLine('Unknown command: ' + cmd, 'error');
+        printLine('Type "help" for available commands');
+      }
+      printLine('');
+    }
+  });
+
+  // Auto-focus
+  input.focus();
+})();
+</script>

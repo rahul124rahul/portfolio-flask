@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Verify 2FA{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="card shadow">
+        <div class="card-body text-center p-4">
+          <i class="bi bi-shield-lock fs-1 text-primary mb-3 d-block"></i>
+          <h4 class="mb-3">Two-Factor Authentication</h4>
+          <p class="text-muted">Enter the 6-digit code from your authenticator app.</p>
+          <form method="POST" action="{{ url_for('main.verify_2fa') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="mb-3">
+              <input type="text" name="token" class="form-control form-control-lg text-center"
+                     maxlength="6" pattern="[0-9]{6}" required autofocus
+                     placeholder="000000" autocomplete="one-time-code">
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg w-100">
+              <i class="bi bi-check-circle me-1"></i>Verify
+            </button>
+          </form>
+          <a href="{{ url_for('main.admin_login') }}" class="btn btn-link mt-3 text-muted">Back to Login</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

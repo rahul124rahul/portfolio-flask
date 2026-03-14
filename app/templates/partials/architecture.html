@@ -1,0 +1,87 @@
+<!-- Project Architecture Diagrams -->
+<section class="py-5" id="architecture" data-aos="fade-up">
+  <div class="container">
+    <h2 class="text-center mb-4 fw-bold">Architecture Overview</h2>
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card shadow-sm">
+          <div class="card-body p-4">
+            <div class="mermaid">
+              graph TB
+                  User["👤 User Browser"]
+                  Portfolio["🌐 Portfolio UI"]
+                  API["⚡ REST API"]
+                  DB["💾 Database"]
+                  Cache["⚙️ Cache Layer"]
+
+                  User -->|HTTP Request| Portfolio
+                  Portfolio -->|JSON API| API
+                  API -->|Query| DB
+                  API -->|Cache Check| Cache
+                  Cache -->|Cached Data| API
+
+                  style Portfolio fill:#667eea,stroke:#764ba2,color:#fff
+                  style API fill:#667eea,stroke:#764ba2,color:#fff
+                  style DB fill:#764ba2,stroke:#667eea,color:#fff
+                  style Cache fill:#999,stroke:#667eea,color:#fff
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-5 g-4">
+      <div class="col-lg-6">
+        <div class="card shadow-sm">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Frontend Components</h5>
+          </div>
+          <div class="card-body">
+            <div class="mermaid">
+              graph LR
+                  A["Hero Section"]
+                  B["Skills Gallery"]
+                  C["Projects Wall"]
+                  D["Contact Form"]
+
+                  A --> B
+                  B --> C
+                  C --> D
+
+                  style A fill:#667eea,color:#fff
+                  style B fill:#667eea,color:#fff
+                  style C fill:#667eea,color:#fff
+                  style D fill:#667eea,color:#fff
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="card shadow-sm">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Backend Services</h5>
+          </div>
+          <div class="card-body">
+            <div class="mermaid">
+              graph LR
+                  A["Auth Service"]
+                  B["Portfolio API"]
+                  C["Analytics Engine"]
+                  D["Email Service"]
+
+                  A ---|Verify| B
+                  B ---|Track| C
+                  B ---|Send| D
+
+                  style A fill:#764ba2,color:#fff
+                  style B fill:#764ba2,color:#fff
+                  style C fill:#764ba2,color:#fff
+                  style D fill:#764ba2,color:#fff
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

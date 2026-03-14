@@ -1,0 +1,48 @@
+<!-- Number Path Game Section -->
+<section class="py-5" id="number-game" data-aos="fade-up">
+  <div class="container">
+    <h2 class="text-center mb-4 fw-bold">Take a Break - Play a Game!</h2>
+    <div class="number-game-container">
+      <div class="game-header">
+        <h3>🎯 Number Path</h3>
+        <p>Connect numbers in order (1 → 2 → 3...) without missing any!</p>
+      </div>
+
+      <div class="game-timer" id="gameTimer">0s</div>
+
+      <div class="game-board">
+        <div class="game-grid" id="gameGrid"></div>
+
+        <div class="game-stats">
+          <div class="stat-box">
+            <div class="stat-value" id="connectedCount">0</div>
+            <div class="stat-label">Connected</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" id="remainingCount">16</div>
+            <div class="stat-label">Remaining</div>
+          </div>
+        </div>
+
+        <div id="gameCompletion"></div>
+      </div>
+
+      <div class="game-controls">
+        <button class="game-btn" id="numberNewGameBtn">
+          <i class="bi bi-arrow-clockwise"></i> New Game
+        </button>
+      </div>
+
+      <div class="game-instructions">
+        <p style="margin: 0;">
+          <strong>How to Play:</strong><br>
+          Click the numbers in order (1, 2, 3, 4...). The next number to click is highlighted!<br>
+          Connect all numbers without missing any to complete the puzzle. Each game is randomly generated!
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="numberGameContainer"></div>
+<script src="{{ url_for('static', filename='js/number-game.js') }}"></script>

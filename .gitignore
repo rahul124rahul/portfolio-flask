@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Environment variables
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Flask
+instance/
+*.db
+*.sqlite3
+
+# Uploads (keep directory structure, ignore files)
+app/static/uploads/profile_images/*
+app/static/uploads/project_images/*
+app/static/uploads/resumes/*
+!app/static/uploads/profile_images/.gitkeep
+!app/static/uploads/project_images/.gitkeep
+!app/static/uploads/resumes/.gitkeep
+
+# Migrations versions may contain sensitive data
+# Uncomment if needed:
+# migrations/versions/

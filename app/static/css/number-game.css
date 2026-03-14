@@ -1,0 +1,245 @@
+/* Number Path Game Styles */
+.number-game-container {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+  border-radius: 12px;
+  margin: 2rem auto;
+  max-width: 500px;
+}
+
+.game-header {
+  color: white;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.game-header h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.8rem;
+}
+
+.game-header p {
+  margin: 0;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.game-board {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.game-cell {
+  aspect-ratio: 1 / 1;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background: #f8f9fa;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.game-cell:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.game-cell.empty {
+  background: #f0f0f0;
+  color: #ccc;
+  cursor: default;
+}
+
+.game-cell.empty:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.game-cell.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.game-cell.connected {
+  background: #e8f5e9;
+  border-color: #4CAF50;
+  color: #2e7d32;
+}
+
+.game-cell.connected:hover {
+  transform: scale(1.05);
+}
+
+.game-cell.next {
+  background: #fff3e0;
+  border-color: #ff9800;
+  color: #e65100;
+  animation: pulse 0.5s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+.game-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.stat-box {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #667eea;
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.game-timer {
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.game-controls {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.game-btn {
+  background: white;
+  color: #667eea;
+  border: 2px solid white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.game-btn:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.game-btn:active {
+  transform: translateY(0);
+}
+
+.game-completion {
+  display: none;
+  background: rgba(0, 0, 0, 0.2);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 6px;
+  text-align: center;
+  animation: slideDown 0.3s ease;
+}
+
+.completion-message {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.completion-time {
+  font-size: 2rem;
+  color: #ffd700;
+  margin: 0.5rem 0;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.game-instructions {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.game-instructions strong {
+  color: #ffd700;
+}
+
+[data-bs-theme="dark"] .game-board {
+  background: #2a2a2a;
+}
+
+[data-bs-theme="dark"] .game-cell {
+  background: #1a1a1a;
+  border-color: #444;
+  color: #667;
+}
+
+[data-bs-theme="dark"] .game-cell.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+[data-bs-theme="dark"] .stat-box {
+  background: #1a1a1a;
+  color: #ccc;
+}
+
+[data-bs-theme="dark"] .game-btn {
+  background: #764ba2;
+  color: white;
+  border-color: #764ba2;
+}
+
+[data-bs-theme="dark"] .game-btn:hover {
+  background: white;
+  color: #764ba2;
+}

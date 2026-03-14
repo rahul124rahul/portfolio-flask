@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block navbar %}
+{% include "partials/admin_navbar.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4"><i class="bi bi-speedometer2 me-2"></i>Dashboard</h2>
+
+  <!-- Stats Row -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card shadow-sm stat-card stat-projects">
+        <div class="card-body">
+          <h6 class="text-muted">Projects</h6>
+          <h3>{{ projects|length }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm stat-card stat-skills">
+        <div class="card-body">
+          <h6 class="text-muted">Skills</h6>
+          <h3>{{ skills|length }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm stat-card stat-experience">
+        <div class="card-body">
+          <h6 class="text-muted">Experience</h6>
+          <h3>{{ experiences|length }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm stat-card stat-messages">
+        <div class="card-body">
+          <h6 class="text-muted">Messages</h6>
+          <h3>{{ messages|length }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header"><strong>Quick Actions</strong></div>
+    <div class="card-body">
+      <a href="{{ url_for('main.edit_profile') }}" class="btn btn-outline-primary me-2 mb-2"><i class="bi bi-person"></i> Edit Profile</a>
+      <a href="{{ url_for('main.add_project') }}" class="btn btn-outline-success me-2 mb-2"><i class="bi bi-plus-circle"></i> Add Project</a>
+      <a href="{{ url_for('main.import_github') }}" class="btn btn-outline-dark me-2 mb-2"><i class="bi bi-github"></i> Import GitHub</a>
+      <a href="{{ url_for('main.add_experience') }}" class="btn btn-outline-warning me-2 mb-2"><i class="bi bi-plus-circle"></i> Add Experience</a>
+      <a href="{{ url_for('main.upload_resume') }}" class="btn btn-outline-info me-2 mb-2"><i class="bi bi-file-earmark-pdf"></i> Upload Resume</a>
+      {% if resume_exists %}
+      <a href="{{ url_for('main.view_resume') }}" target="_blank" class="btn btn-outline-secondary me-2 mb-2"><i class="bi bi-eye"></i> View Resume</a>
+      {% endif %}
+      <a href="{{ url_for('main.admin_analytics') }}" class="btn btn-outline-dark me-2 mb-2"><i class="bi bi-graph-up"></i> View Analytics</a>
+    </div>
+  </div>
+
+  <!-- Resume Status -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <strong>Resume</strong>
+      <a href="{{ url_for('main.upload_resume') }}" class="btn btn-sm btn-primary">Upload</a>
+    </div>
+    <div class="card-body">
+      {% if resume_exists %}
+      <p class="text-success mb-0"><i class="bi bi-check-circle"></i> Resume uploaded.</p>
+      {% else %}
+      <p class="text-danger mb-0"><i class="bi bi-x-circle"></i> No resume uploaded yet.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Projects Section -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <strong>Projects</strong>
+      <a href="{{ url_for('main.add_project') }}" class="btn btn-sm btn-success"><i class="bi bi-plus"></i> Add</a>
+    </div>
+    <div class="card-body">
+      {% if projects %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr><th>Image</th><th>Title</th><th>Links</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            {% for project in projects %}
+            <tr>
+              <td>
+                {% if project.image %}
+                <img src="{{ url_for('static', filename='uploads/project_images/' ~ project.image) }}" width="60" class="rounded" alt="">
+                {% else %}
+                <span class="text-muted">No image</span>
+                {% endif %}
+              </td>
+              <td><strong>{{ project.title }}</strong></td>
+              <td>
+                {% if project.github %}<a href="{{ project.github }}" target="_blank" class="btn btn-sm btn-outline-dark me-1">GitHub</a>{% endif %}
+                {% if project.demo %}<a href="{{ project.demo }}" target="_blank" class="btn btn-sm btn-outline-primary">Demo</a>{% endif %}
+              </td>
+              <td>
+                <a href="{{ url_for('main.edit_project', id=project.id) }}" class="btn btn-sm btn-warning me-1">Edit</a>
+                <form action="{{ url_for('main.delete_project', id=project.id) }}" method="POST" class="d-inline">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this project?')">Delete</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-muted mb-0">No projects yet.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Experience Section -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <strong>Experience</strong>
+      <a href="{{ url_for('main.add_experience') }}" class="btn btn-sm btn-success"><i class="bi bi-plus"></i> Add</a>
+    </div>
+    <div class="card-body">
+      {% if experiences %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr><th>Role</th><th>Company</th><th>Duration</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            {% for exp in experiences %}
+            <tr>
+              <td><strong>{{ exp.role }}</strong></td>
+              <td>{{ exp.company }}</td>
+              <td><small>{{ exp.start_date }} &ndash; {{ exp.end_date or "Present" }}</small></td>
+              <td>
+                <a href="{{ url_for('main.edit_experience', id=exp.id) }}" class="btn btn-sm btn-warning me-1">Edit</a>
+                <form action="{{ url_for('main.delete_experience', id=exp.id) }}" method="POST" class="d-inline">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this experience?')">Delete</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-muted mb-0">No experience entries yet.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Recent Messages -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <strong>Recent Messages</strong>
+      <a href="{{ url_for('main.admin_messages') }}" class="btn btn-sm btn-primary">View All</a>
+    </div>
+    <div class="card-body">
+      {% if messages %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr><th>From</th><th>Subject</th><th>Date</th></tr>
+          </thead>
+          <tbody>
+            {% for msg in messages[:5] %}
+            <tr>
+              <td><strong>{{ msg.name }}</strong><br><small class="text-muted">{{ msg.email }}</small></td>
+              <td>{{ msg.subject or "No subject" }}</td>
+              <td><small>{{ msg.created_at.strftime('%b %d, %Y') if msg.created_at else 'N/A' }}</small></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-muted mb-0">No messages yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

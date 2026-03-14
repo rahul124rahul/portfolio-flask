@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Edit Project{% endblock %}
+
+{% block navbar %}
+{% include "partials/admin_navbar.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 700px;">
+  <h2 class="mb-4">Edit Project</h2>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <form method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="mb-3">
+          <label class="form-label">Project Title <span class="text-danger">*</span></label>
+          <input type="text" name="title" value="{{ project.title }}" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Description <span class="text-danger">*</span></label>
+          <textarea name="description" class="form-control" rows="4" required>{{ project.description }}</textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">GitHub Link</label>
+          <input type="url" name="github" value="{{ project.github or '' }}" class="form-control">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Live Demo Link</label>
+          <input type="url" name="demo" value="{{ project.demo or '' }}" class="form-control">
+        </div>
+
+        <!-- Current Image -->
+        <div class="mb-3">
+          <label class="form-label">Current Image</label>
+          <div>
+            {% if project.image %}
+            <img src="{{ url_for('static', filename='uploads/project_images/' ~ project.image) }}" class="rounded border" width="120" alt="">
+            {% else %}
+            <span class="text-muted">No image uploaded</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Upload New Image (optional)</label>
+          <input type="file" name="image" class="form-control" accept="image/*" id="imageInput">
+        </div>
+
+        <div class="mb-3" id="previewContainer" style="display: none;">
+          <label class="form-label">Preview</label>
+          <div>
+            <img id="previewImage" class="rounded border" width="120" alt="Preview">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Update Project</button>
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.getElementById('imageInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        document.getElementById('previewImage').src = ev.target.result;
+        document.getElementById('previewContainer').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Manage Skills{% endblock %}
+
+{% block navbar %}
+{% include "partials/admin_navbar.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 700px;">
+  <h2 class="mb-4">Manage Skills</h2>
+
+  <!-- Add Skill -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header"><strong>Add New Skill</strong></div>
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('main.add_skill') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="input-group">
+          <input type="text" name="name" class="form-control" placeholder="Enter skill name (e.g. Python, Flask, React)" required>
+          <button class="btn btn-primary">Add Skill</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Skills List -->
+  <div class="card shadow-sm">
+    <div class="card-header"><strong>Current Skills ({{ skills|length }})</strong></div>
+    <div class="card-body">
+      {% if skills %}
+      <div class="d-flex flex-wrap gap-2">
+        {% for skill in skills %}
+        <span class="badge bg-primary d-flex align-items-center gap-1 fs-6 py-2 px-3">
+          {{ skill.name }}
+          <form action="{{ url_for('main.delete_skill', id=skill.id) }}" method="POST" class="d-inline ms-1">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-close btn-close-white btn-sm p-0" style="font-size: 0.6rem;" onclick="return confirm('Delete {{ skill.name }}?')"></button>
+          </form>
+        </span>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-muted mb-0">No skills added yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

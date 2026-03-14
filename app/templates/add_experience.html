@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Add Experience{% endblock %}
+
+{% block navbar %}
+{% include "partials/admin_navbar.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 700px;">
+  <h2 class="mb-4">Add Experience</h2>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="mb-3">
+          <label class="form-label">Role / Position <span class="text-danger">*</span></label>
+          <input type="text" name="role" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Company <span class="text-danger">*</span></label>
+          <input type="text" name="company" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Company Website</label>
+          <input type="url" name="company_url" class="form-control" placeholder="https://...">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Location</label>
+          <input type="text" name="location" class="form-control">
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Start Date</label>
+            <input type="text" name="start_date" class="form-control" placeholder="Jan 2024">
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">End Date</label>
+            <input type="text" name="end_date" class="form-control" placeholder="Present">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Description</label>
+          <textarea name="description" class="form-control" rows="4"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success"><i class="bi bi-plus-circle"></i> Save Experience</button>
+        <a href="{{ url_for('main.manage_experience') }}" class="btn btn-secondary">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,121 @@
+{% if resume_exists %}
+<!-- Interactive Resume Viewer -->
+<section class="py-5 bg-light" id="resume-viewer" data-aos="fade-up">
+  <div class="container">
+    <h2 class="text-center mb-4 fw-bold">Resume</h2>
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="card shadow-sm">
+          <div class="card-body p-0">
+            <!-- PDF Viewer Controls -->
+            <div class="pdf-controls bg-primary text-white p-3 d-flex justify-content-between align-items-center">
+              <div class="d-flex gap-2">
+                <button id="prevPage" class="btn btn-sm btn-outline-light" title="Previous Page">
+                  <i class="bi bi-chevron-left"></i>
+                </button>
+                <span class="text-white">
+                  Page <input type="number" id="pageNum" min="1" style="width: 50px; border: 1px solid white; padding: 4px; color: black;" value="1"> / <span id="pageCount">0</span>
+                </span>
+                <button id="nextPage" class="btn btn-sm btn-outline-light" title="Next Page">
+                  <i class="bi bi-chevron-right"></i>
+                </button>
+              </div>
+              <div class="d-flex gap-2">
+                <a href="{{ url_for('main.download_resume') }}" class="btn btn-sm btn-outline-light" title="Download">
+                  <i class="bi bi-download me-1"></i>Download
+                </a>
+              </div>
+            </div>
+
+            <!-- PDF Canvas -->
+            <div style="height: 600px; overflow: auto; background: #ccc; display: flex; justify-content: center; align-items: center;">
+              <canvas id="pdfCanvas" style="max-width: 100%; max-height: 100%;"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="text-center mt-3 small text-muted">
+          <i class="bi bi-info-circle"></i> PDF Viewer - Use controls to navigate
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+(function() {
+  var pdfUrl = '{{ url_for("main.view_resume") }}';
+  var pdfjsLib = window['pdfjs-dist/build/pdf'];
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+  var canvas = document.getElementById('pdfCanvas');
+  var ctx = canvas.getContext('2d');
+  var pageNumInput = document.getElementById('pageNum');
+  var pageCountSpan = document.getElementById('pageCount');
+  var prevBtn = document.getElementById('prevPage');
+  var nextBtn = document.getElementById('nextPage');
+
+  var pdfDoc = null;
+  var pageNum = 1;
+  var pageRendering = false;
+  var pageNumPending = null;
+
+  function renderPage(num) {
+    if (pageRendering) {
+      pageNumPending = num;
+      return;
+    }
+    pageRendering = true;
+
+    pdfDoc.getPage(num).then(function(page) {
+      var viewport = page.getViewport({ scale: 1.5 });
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+
+      var renderContext = {
+        canvasContext: ctx,
+        viewport: viewport
+      };
+      page.render(renderContext).promise.then(function() {
+        pageRendering = false;
+        if (pageNumPending !== null) {
+          renderPage(pageNumPending);
+          pageNumPending = null;
+        }
+      });
+    });
+
+    pageNumInput.value = num;
+  }
+
+  function handlePrevPage() {
+    if (pageNum <= 1) return;
+    pageNum--;
+    renderPage(pageNum);
+  }
+
+  function handleNextPage() {
+    if (pageNum >= pdfDoc.numPages) return;
+    pageNum++;
+    renderPage(pageNum);
+  }
+
+  prevBtn.addEventListener('click', handlePrevPage);
+  nextBtn.addEventListener('click', handleNextPage);
+  pageNumInput.addEventListener('change', function() {
+    pageNum = Math.max(1, Math.min(parseInt(this.value) || 1, pdfDoc.numPages));
+    renderPage(pageNum);
+  });
+
+  // Load PDF
+  pdfjsLib.getDocument(pdfUrl).promise.then(function(pdf) {
+    pdfDoc = pdf;
+    pageCountSpan.textContent = pdf.numPages;
+    renderPage(pageNum);
+  }).catch(function(err) {
+    console.error('Error loading PDF:', err);
+    canvas.parentElement.innerHTML = '<div class="alert alert-warning m-3">Unable to load PDF viewer. <a href="' + pdfUrl + '">Download instead</a></div>';
+  });
+})();
+</script>
+{% endif %}
