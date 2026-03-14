@@ -32,4 +32,13 @@ def create_app(config_class=Config):
     # Import models so Alembic detects them
     from . import models  # noqa: F401
 
+    # Auto-run migrations on startup (for production deployments without shell access)
+    with app.app_context():
+        if os.getenv("FLASK_ENV") == "production" or os.getenv("DATABASE_URL"):
+            try:
+                from flask_migrate import upgrade
+                upgrade()
+            except Exception as e:
+                app.logger.warning(f"Auto-migration failed: {e}")
+
     return app
