@@ -25,3 +25,6 @@ requests==2.32.3
 # Testing
 pytest==8.3.4
 pytest-flask==1.3.0
+
+# PostgreSQL (production)
+psycopg2-binary==2.9.9
