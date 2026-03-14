@@ -37,8 +37,20 @@ def create_app(config_class=Config):
         try:
             db.create_all()
             app.logger.info("✓ Database tables initialized successfully")
+
+            # Create default admin user if none exists (only on first boot)
+            from .models import Admin
+            if not Admin.query.first():
+                default_admin = Admin(
+                    username="admin",
+                    email=os.getenv("ADMIN_EMAIL", "admin@portfolio.local")
+                )
+                default_admin.set_password("admin123")
+                db.session.add(default_admin)
+                db.session.commit()
+                app.logger.info("✓ Default admin user created: username=admin, password=admin123")
         except Exception as e:
-            app.logger.error(f"✗ Failed to create database tables: {e}", exc_info=True)
+            app.logger.error(f"✗ Failed to initialize database: {e}", exc_info=True)
             # Don't fail app startup, but log the error clearly
 
     return app
