@@ -32,4 +32,11 @@ def create_app(config_class=Config):
     # Import models so Alembic detects them
     from . import models  # noqa: F401
 
+    # Ensure database tables exist on application startup
+    with app.app_context():
+        try:
+            db.create_all()
+        except Exception as e:
+            app.logger.debug(f"Note: db.create_all() had an issue (may be expected): {e}")
+
     return app
