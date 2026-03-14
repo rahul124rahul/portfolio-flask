@@ -41,10 +41,7 @@ def create_app(config_class=Config):
             # Create default admin user if none exists (only on first boot)
             from .models import Admin
             if not Admin.query.first():
-                default_admin = Admin(
-                    username="admin",
-                    email=os.getenv("ADMIN_EMAIL", "admin@portfolio.local")
-                )
+                default_admin = Admin(username="admin")
                 default_admin.set_password("admin123")
                 db.session.add(default_admin)
                 db.session.commit()
