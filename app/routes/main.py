@@ -601,13 +601,9 @@ def upload_resume():
         if file and file.filename and allowed_file(file.filename):
             resume_url = upload_resume_to_cloudinary(file)
             if resume_url:
-                # Store the resume URL in the profile
-                profile = Profile.query.first()
-                if profile:
-                    profile.resume_url = resume_url
-                    db.session.commit()
+                # Resume uploaded to Cloudinary successfully
                 log_admin_action("upload_resume")
-                flash("Resume uploaded successfully!", "success")
+                flash("Resume uploaded successfully! It is now stored in the cloud.", "success")
                 return redirect(url_for("main.dashboard"))
             else:
                 flash("Failed to upload resume. Please try again.", "danger")

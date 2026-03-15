@@ -41,7 +41,6 @@ class Profile(db.Model):
     phone = db.Column(db.String(50))
     location = db.Column(db.String(150))
     profile_image = db.Column(db.String(500))  # Increased size for Cloudinary URLs
-    resume_url = db.Column(db.String(500))  # Cloudinary resume URL
 
 
 class Project(db.Model):
