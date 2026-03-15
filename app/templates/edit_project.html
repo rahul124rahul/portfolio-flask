@@ -39,7 +39,11 @@
           <label class="form-label">Current Image</label>
           <div>
             {% if project.image %}
-            <img src="{{ url_for('static', filename='uploads/project_images/' ~ project.image) }}" class="rounded border" width="120" alt="">
+              {% if project.image.startswith('http') %}
+              <img src="{{ project.image }}" class="rounded border" width="120" alt="">
+              {% else %}
+              <img src="{{ url_for('static', filename='uploads/project_images/' ~ project.image) }}" class="rounded border" width="120" alt="">
+              {% endif %}
             {% else %}
             <span class="text-muted">No image uploaded</span>
             {% endif %}

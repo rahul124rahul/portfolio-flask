@@ -280,6 +280,8 @@ def dashboard():
 @main.route("/admin/profile", methods=["GET", "POST"])
 @login_required
 def edit_profile():
+    from ..cloudinary_helper import upload_image
+
     profile = Profile.query.first()
     if not profile:
         profile = Profile()
@@ -299,12 +301,12 @@ def edit_profile():
 
         image_file = request.files.get("profile_image")
         if image_file and image_file.filename and allowed_file(image_file.filename):
-            filename = secure_filename(image_file.filename)
-            save_path = os.path.join(
-                current_app.config["UPLOAD_FOLDER"], "profile_images", filename
-            )
-            image_file.save(save_path)
-            profile.profile_image = filename
+            # Upload to Cloudinary
+            image_url = upload_image(image_file, folder="profiles")
+            if image_url:
+                profile.profile_image = image_url
+            else:
+                flash("Failed to upload image. Please try again.", "warning")
 
         db.session.commit()
         log_admin_action("update_profile")
@@ -347,23 +349,24 @@ def delete_social(id):
 @main.route("/admin/add-project", methods=["GET", "POST"])
 @login_required
 def add_project():
+    from ..cloudinary_helper import upload_image
+
     if request.method == "POST":
         title = request.form.get("title", "").strip()
         description = request.form.get("description", "").strip()
         github = request.form.get("github", "").strip()
         demo = request.form.get("demo", "").strip()
 
-        image_filename = None
+        image_url = None
         image_file = request.files.get("image")
         if image_file and image_file.filename and allowed_file(image_file.filename):
-            image_filename = secure_filename(image_file.filename)
-            image_file.save(
-                os.path.join(current_app.config["UPLOAD_FOLDER"], "project_images", image_filename)
-            )
+            image_url = upload_image(image_file, folder="projects")
+            if not image_url:
+                flash("Failed to upload image. Please try again.", "warning")
 
         project = Project(
             title=title, description=description,
-            github=github, demo=demo, image=image_filename,
+            github=github, demo=demo, image=image_url,
         )
         db.session.add(project)
         db.session.commit()
@@ -456,6 +459,8 @@ def import_github_save():
 @main.route("/admin/edit-project/<int:id>", methods=["GET", "POST"])
 @login_required
 def edit_project(id):
+    from ..cloudinary_helper import upload_image
+
     project = Project.query.get_or_404(id)
 
     if request.method == "POST":
@@ -466,11 +471,11 @@ def edit_project(id):
 
         image_file = request.files.get("image")
         if image_file and image_file.filename and allowed_file(image_file.filename):
-            image_filename = secure_filename(image_file.filename)
-            image_file.save(
-                os.path.join(current_app.config["UPLOAD_FOLDER"], "project_images", image_filename)
-            )
-            project.image = image_filename
+            image_url = upload_image(image_file, folder="projects")
+            if image_url:
+                project.image = image_url
+            else:
+                flash("Failed to upload image. Please try again.", "warning")
 
         db.session.commit()
         log_admin_action("edit_project", f"Edited: {project.title}")
@@ -589,16 +594,23 @@ def delete_experience(id):
 @main.route("/admin/upload-resume", methods=["GET", "POST"])
 @login_required
 def upload_resume():
+    from ..cloudinary_helper import upload_resume as upload_resume_to_cloudinary
+
     if request.method == "POST":
         file = request.files.get("resume")
         if file and file.filename and allowed_file(file.filename):
-            upload_path = os.path.join(
-                current_app.config["UPLOAD_FOLDER"], "resumes", "resume.pdf"
-            )
-            file.save(upload_path)
-            log_admin_action("upload_resume")
-            flash("Resume uploaded successfully!", "success")
-            return redirect(url_for("main.dashboard"))
+            resume_url = upload_resume_to_cloudinary(file)
+            if resume_url:
+                # Store the resume URL in the profile
+                profile = Profile.query.first()
+                if profile:
+                    profile.resume_url = resume_url
+                    db.session.commit()
+                log_admin_action("upload_resume")
+                flash("Resume uploaded successfully!", "success")
+                return redirect(url_for("main.dashboard"))
+            else:
+                flash("Failed to upload resume. Please try again.", "danger")
         else:
             flash("Please upload a valid PDF file.", "danger")
 

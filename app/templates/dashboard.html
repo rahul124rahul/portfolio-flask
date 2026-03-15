@@ -94,7 +94,11 @@
             <tr>
               <td>
                 {% if project.image %}
-                <img src="{{ url_for('static', filename='uploads/project_images/' ~ project.image) }}" width="60" class="rounded" alt="">
+                  {% if project.image.startswith('http') %}
+                  <img src="{{ project.image }}" width="60" class="rounded" alt="">
+                  {% else %}
+                  <img src="{{ url_for('static', filename='uploads/project_images/' ~ project.image) }}" width="60" class="rounded" alt="">
+                  {% endif %}
                 {% else %}
                 <span class="text-muted">No image</span>
                 {% endif %}

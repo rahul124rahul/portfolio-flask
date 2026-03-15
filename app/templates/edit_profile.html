@@ -17,7 +17,11 @@
         <!-- Profile Image -->
         <div class="mb-3 text-center">
           {% if profile.profile_image %}
-          <img src="{{ url_for('static', filename='uploads/profile_images/' ~ profile.profile_image) }}" class="rounded-circle mb-2" width="120" height="120" style="object-fit: cover;" alt="Profile">
+            {% if profile.profile_image.startswith('http') %}
+              <img src="{{ profile.profile_image }}" class="rounded-circle mb-2" width="120" height="120" style="object-fit: cover;" alt="Profile">
+            {% else %}
+              <img src="{{ url_for('static', filename='uploads/profile_images/' ~ profile.profile_image) }}" class="rounded-circle mb-2" width="120" height="120" style="object-fit: cover;" alt="Profile">
+            {% endif %}
           {% endif %}
           <div>
             <label class="form-label">Profile Image</label>

@@ -40,7 +40,8 @@ class Profile(db.Model):
     email = db.Column(db.String(120))
     phone = db.Column(db.String(50))
     location = db.Column(db.String(150))
-    profile_image = db.Column(db.String(200))
+    profile_image = db.Column(db.String(500))  # Increased size for Cloudinary URLs
+    resume_url = db.Column(db.String(500))  # Cloudinary resume URL
 
 
 class Project(db.Model):
@@ -49,7 +50,7 @@ class Project(db.Model):
     description = db.Column(db.Text, nullable=False)
     github = db.Column(db.String(200))
     demo = db.Column(db.String(200))
-    image = db.Column(db.String(200))
+    image = db.Column(db.String(500))  # Increased size for Cloudinary URLs
 
 
 class Skill(db.Model):

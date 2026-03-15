@@ -60,11 +60,19 @@
   <div class="container position-relative" data-aos="fade-down">
     {% if profile and profile.profile_image %}
     <div class="mb-4">
-      <img src="{{ url_for('static', filename='uploads/profile_images/' ~ profile.profile_image) }}"
-           class="profile-img mb-3"
-           alt="{{ profile.name }}"
-           loading="eager"
-           onerror="this.style.display='none'">
+      {% if profile.profile_image.startswith('http') %}
+        <img src="{{ profile.profile_image }}"
+             class="profile-img mb-3"
+             alt="{{ profile.name }}"
+             loading="eager"
+             onerror="this.style.display='none'">
+      {% else %}
+        <img src="{{ url_for('static', filename='uploads/profile_images/' ~ profile.profile_image) }}"
+             class="profile-img mb-3"
+             alt="{{ profile.name }}"
+             loading="eager"
+             onerror="this.style.display='none'">
+      {% endif %}
     </div>
     {% endif %}
     <h1 class="mt-2 fw-bold display-4">{{ profile.name if profile else "Your Name" }}</h1>
@@ -244,7 +252,11 @@
       <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="{{ loop.index0 * 100 }}">
         <div class="card card-3d h-100 shadow-sm border-0">
           {% if project.image %}
-          <img src="{{ url_for('static', filename='uploads/project_images/' ~ project.image) }}" class="card-img-top" alt="{{ project.title }}" style="height: 200px; object-fit: cover;">
+            {% if project.image.startswith('http') %}
+            <img src="{{ project.image }}" class="card-img-top" alt="{{ project.title }}" style="height: 200px; object-fit: cover;">
+            {% else %}
+            <img src="{{ url_for('static', filename='uploads/project_images/' ~ project.image) }}" class="card-img-top" alt="{{ project.title }}" style="height: 200px; object-fit: cover;">
+            {% endif %}
           {% endif %}
           <div class="card-body d-flex flex-column">
             <h5 class="card-title fw-bold">{{ project.title }}</h5>
