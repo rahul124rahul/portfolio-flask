@@ -124,19 +124,30 @@ def contact():
     db.session.add(msg)
     db.session.commit()
 
-    # Try to send email notification
+    # Send email notification asynchronously (non-blocking)
     admin_email = current_app.config.get("ADMIN_EMAIL")
     if admin_email and current_app.config.get("MAIL_USERNAME"):
-        try:
-            email_msg = MailMessage(
-                subject=f"Portfolio Contact: {subject or 'New Message'} from {name}",
-                sender=current_app.config["MAIL_DEFAULT_SENDER"],
-                recipients=[admin_email],
-                body=f"Name: {name}\nEmail: {email}\nSubject: {subject}\n\nMessage:\n{message_text}",
-            )
-            mail.send(email_msg)
-        except Exception as e:
-            current_app.logger.error(f"Failed to send email notification: {e}")
+        def _send_email_async(app, recipient, subject_text, body_text):
+            """Send email in background thread."""
+            with app.app_context():
+                try:
+                    email_msg = MailMessage(
+                        subject=subject_text,
+                        sender=current_app.config["MAIL_DEFAULT_SENDER"],
+                        recipients=[recipient],
+                        body=body_text,
+                    )
+                    mail.send(email_msg)
+                    app.logger.info(f"Email sent to {recipient}")
+                except Exception as e:
+                    app.logger.error(f"Failed to send email: {e}")
+
+        import threading
+        email_subject = f"Portfolio Contact: {subject or 'New Message'} from {name}"
+        email_body = f"Name: {name}\nEmail: {email}\nSubject: {subject}\n\nMessage:\n{message_text}"
+        t = threading.Thread(target=_send_email_async, args=(current_app._get_current_object(), admin_email, email_subject, email_body))
+        t.daemon = True
+        t.start()
 
     flash("Your message has been sent successfully!", "success")
     return redirect(url_for("main.index", _anchor="contact"))
